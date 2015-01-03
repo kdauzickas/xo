@@ -4,18 +4,16 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-var grid *sdl.Surface
-
 func main() {
 	window, screen := setup()
-	loadAssets()
+	assets := loadAssets()
 
-	grid.Blit(nil, screen, nil)
+	assets.Board.Blit(nil, screen, nil)
 	window.UpdateSurface()
 
 	sdl.Delay(5000)
 
-	exit(window)
+	exit(window, assets)
 }
 
 func setup() (*sdl.Window, *sdl.Surface) {
@@ -38,15 +36,19 @@ func setup() (*sdl.Window, *sdl.Surface) {
 	return window, window.GetSurface()
 }
 
-func loadAssets() {
-	grid = sdl.LoadBMP("assets/grid.bmp")
-	if grid == nil {
-		panic("Failed to load grid")
-	}
+func loadAssets() *Board {
+	board := &Board{}
+
+	board.Board = sdl.LoadBMP("assets/grid.bmp")
+	board.X = sdl.LoadBMP("assets/x.bmp")
+	board.O = sdl.LoadBMP("assets/o.bmp")
+	board.Validate()
+
+	return board
 }
 
-func exit(window *sdl.Window) {
-	grid.Free()
+func exit(window *sdl.Window, assets *Board) {
+	assets.Free()
 	window.Destroy()
 	sdl.Quit()
 }
