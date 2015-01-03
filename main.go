@@ -8,10 +8,17 @@ func main() {
 	window, screen := setup()
 	assets := loadAssets()
 
-	assets.Board.Blit(nil, screen, nil)
-	window.UpdateSurface()
+	quit := false
 
-	sdl.Delay(5000)
+	for !quit {
+		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+			if _, ok := event.(*sdl.QuitEvent); ok {
+				quit = true
+			}
+		}
+		assets.Board.Blit(nil, screen, nil)
+		window.UpdateSurface()
+	}
 
 	exit(window, assets)
 }
