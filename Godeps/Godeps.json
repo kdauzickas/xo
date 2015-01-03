@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/kdauzickas/xo",
+	"GoVersion": "go1.4",
+	"Deps": [
+		{
+			"ImportPath": "github.com/veandco/go-sdl2",
+			"Rev": "1caac2b5fba5f3c6b3fcb71135e367b4c1815872"
+		}
+	]
+}
+
