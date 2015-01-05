@@ -1,26 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 func main() {
 	window, screen := setup()
-	assets := loadAssets()
+	board := loadAssets()
 
 	quit := false
 
 	for !quit {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			if _, ok := event.(*sdl.QuitEvent); ok {
+			switch t := event.(type) {
+			case *sdl.QuitEvent:
 				quit = true
+			case *sdl.MouseButtonEvent:
+				handleMouseClick(t, board)
 			}
 		}
-		assets.Board.Blit(nil, screen, nil)
+		board.Board.Blit(nil, screen, nil)
 		window.UpdateSurface()
 	}
 
-	exit(window, assets)
+	exit(window, board)
 }
 
 func setup() (*sdl.Window, *sdl.Surface) {
@@ -55,7 +59,54 @@ func loadAssets() *Board {
 }
 
 func exit(window *sdl.Window, assets *Board) {
-	assets.Free()
+	assets.Unload()
 	window.Destroy()
 	sdl.Quit()
+}
+
+func handleMouseClick(click *sdl.MouseButtonEvent, board *Board) {
+	if click.Type != sdl.MOUSEBUTTONUP {
+		return
+	}
+
+	block := getBlock(click)
+
+	if board.Free(block) {
+		switch click.Button {
+		case sdl.BUTTON_LEFT:
+			board.Place(block, SYMBOL_X)
+		case sdl.BUTTON_RIGHT:
+			board.Place(block, SYMBOL_O)
+		}
+	}
+
+	fmt.Println(board)
+}
+
+// Get block where the click happened
+// Grid is numbered like this:
+// 1 2 3
+// 4 5 6
+// 7 8 9
+func getBlock(click *sdl.MouseButtonEvent) int {
+	col := 0
+	row := 0
+
+	if click.X > 33 {
+		col = 1
+	}
+
+	if click.X > 66 {
+		col = 2
+	}
+
+	if click.Y > 33 {
+		row = 1
+	}
+
+	if click.Y > 66 {
+		row = 2
+	}
+
+	return row*3 + col + 1
 }
