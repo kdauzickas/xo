@@ -20,7 +20,7 @@ func main() {
 				handleMouseClick(t, board)
 			}
 		}
-		board.Board.Blit(nil, screen, nil)
+		board.Draw(screen)
 		window.UpdateSurface()
 	}
 

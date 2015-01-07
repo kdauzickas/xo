@@ -4,6 +4,12 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+var blockCoords = [9][2]int{
+	{1, 0}, {35, 0}, {68, 0},
+	{1, 34}, {35, 34}, {68, 34},
+	{1, 67}, {35, 67}, {68, 67},
+}
+
 type Board struct {
 	Board     *sdl.Surface
 	X         *sdl.Surface
@@ -28,8 +34,25 @@ func (b *Board) Free(block int) bool {
 }
 
 func (b *Board) Place(block, symbol int) {
-	newSymbol := Block(symbol)
-	b.placement[block-1] = &newSymbol
+	b.placement[block-1] = &Block{symbol, block}
+}
+
+func (b *Board) Draw(screen *sdl.Surface) {
+	b.Board.Blit(nil, screen, nil)
+	for i := 0; i < len(b.placement); i++ {
+		if b.placement[i] == nil {
+			continue
+		}
+
+		c := blockCoords[i]
+
+		switch b.placement[i].Symbol {
+		case SYMBOL_X:
+			b.X.Blit(nil, screen, &sdl.Rect{int32(c[0]), int32(c[1]), 30, 30})
+		case SYMBOL_O:
+			b.O.Blit(nil, screen, &sdl.Rect{int32(c[0]), int32(c[1]), 30, 30})
+		}
+	}
 }
 
 const (
@@ -38,8 +61,11 @@ const (
 	SYMBOL_O    = iota
 )
 
-type Block int
+type Block struct {
+	Symbol int
+	Dest   int
+}
 
 func (b *Block) Free() bool {
-	return *b == SYMBOL_NONE
+	return b.Symbol == SYMBOL_NONE
 }
