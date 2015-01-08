@@ -12,15 +12,25 @@ func main() {
 	quit := false
 
 	for !quit {
+		won, symbol := board.HasWinner()
+
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch t := event.(type) {
 			case *sdl.QuitEvent:
 				quit = true
 			case *sdl.MouseButtonEvent:
-				handleMouseClick(t, board)
+				if !won {
+					handleMouseClick(t, board)
+				}
 			}
 		}
-		board.Draw(screen)
+
+		if won {
+			board.DrawWinner(screen, symbol)
+		} else {
+			board.Draw(screen)
+		}
+
 		window.UpdateSurface()
 	}
 
