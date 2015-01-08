@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+var currentSymbol = SYMBOL_X
 
 func main() {
 	window, screen := setup()
@@ -37,6 +38,7 @@ func main() {
 	exit(window, board)
 }
 
+// Open a window and create the base surface
 func setup() (*sdl.Window, *sdl.Surface) {
 	if sdl.Init(sdl.INIT_EVERYTHING) < 0 {
 		panic("Couldn't init SDL")
@@ -82,15 +84,15 @@ func handleMouseClick(click *sdl.MouseButtonEvent, board *Board) {
 	block := getBlock(click)
 
 	if board.Free(block) {
-		switch click.Button {
-		case sdl.BUTTON_LEFT:
+		switch currentSymbol {
+		case SYMBOL_O:
 			board.Place(block, SYMBOL_X)
-		case sdl.BUTTON_RIGHT:
+			currentSymbol = SYMBOL_X
+		case SYMBOL_X:
 			board.Place(block, SYMBOL_O)
+			currentSymbol = SYMBOL_O
 		}
 	}
-
-	fmt.Println(board)
 }
 
 // Get block where the click happened
